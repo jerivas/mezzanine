@@ -30,13 +30,15 @@ class PostsRSS(Feed):
         removed, fall back to the ``SITE_TITLE`` and ``SITE_TAGLINE``
         settings.
         """
+        self.blog_slug = kwargs.pop("blog_slug", None)
         self.tag = kwargs.pop("tag", None)
         self.category = kwargs.pop("category", None)
         self.username = kwargs.pop("username", None)
         super(PostsRSS, self).__init__(*args, **kwargs)
         self._public = True
         try:
-            page = Page.objects.published().get(slug=settings.BLOG_SLUG)
+            page = Page.objects.published().get(slug="%s/%s" %
+                (settings.BLOG_SLUG, self.blog_slug))
         except Page.DoesNotExist:
             page = None
         else:
@@ -58,12 +60,12 @@ class PostsRSS(Feed):
         return super(PostsRSS, self).get_feed(*args, **kwargs)
 
     def link(self):
-        return reverse("blog_post_feed", kwargs={"format": "rss"})
+        return reverse("blog_post_feed", kwargs={"blog_slug": self.blog_slug, "format": "rss"})
 
     def items(self):
         if not self._public:
             return []
-        blog_posts = BlogPost.objects.published().select_related("user")
+        blog_posts = BlogPost.objects.published().filter(blog__slug=self.blog_slug).select_related("user")
         if self.tag:
             tag = get_object_or_404(Keyword, slug=self.tag)
             blog_posts = blog_posts.filter(keywords__in=tag.assignments.all())
@@ -81,14 +83,14 @@ class PostsRSS(Feed):
     def categories(self):
         if not self._public:
             return []
-        return BlogCategory.objects.all()
+        return BlogCategory.objects.filter(blog__slug=self.blog_slug)
 
     def item_author_name(self, item):
         return item.user.get_full_name() or item.user.username
 
     def item_author_link(self, item):
         username = item.user.username
-        return reverse("blog_post_list_author", kwargs={"username": username})
+        return reverse("blog_post_list_author", kwargs={"blog_slug": self.blog_slug, "username": username})
 
     def item_pubdate(self, item):
         return item.publish_date
@@ -108,4 +110,4 @@ class PostsAtom(PostsRSS):
         return self.description
 
     def link(self):
-        return reverse("blog_post_feed", kwargs={"format": "atom"})
+        return reverse("blog_post_feed", kwargs={"blog_slug": self.blog_slug, "format": "atom"})

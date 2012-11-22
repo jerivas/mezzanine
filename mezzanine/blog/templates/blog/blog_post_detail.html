@@ -27,8 +27,8 @@
 {% editable blog_post.publish_date %}
 <h6>
     {% trans "Posted by" %}:
-    {% with blog_post.user as author %}
-    <a href="{% url "blog_post_list_author" author %}">{{ author.get_full_name|default:author.username }}</a>
+    {% with author=blog_post.user blog=blog_post.blog.slug %}
+    <a href="{% url "blog_post_list_author" blog author %}">{{ author.get_full_name|default:author.username }}</a>
     {% endwith %}
     {% blocktrans with sometime=blog_post.publish_date|timesince %}{{ sometime }} ago{% endblocktrans %}
 </h6>
@@ -73,7 +73,7 @@
 <ul class="unstyled tags">
     <li>{% trans "Tags" %}:</li>
     {% for tag in tags %}
-    <li><a href="{% url "blog_post_list_tag" tag.slug %}">{{ tag }}</a></li>
+    <li><a href="{% url "blog_post_list_tag" blog.slug tag.slug %}">{{ tag }}</a></li>
     {% endfor %}
 </ul>
 {% endspaceless %}

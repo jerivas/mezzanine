@@ -58,6 +58,6 @@ register_setting(
 register_setting(
     name="BLOG_SLUG",
     description=_("Slug of the page object for the blog."),
-    editable=False,
+    editable=True,
     default="blog",
 )

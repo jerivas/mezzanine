@@ -6,13 +6,38 @@ from mezzanine.core.fields import FileField
 from mezzanine.core.models import Displayable, Ownable, RichText, Slugged
 from mezzanine.generic.fields import CommentsField, RatingField
 from mezzanine.utils.models import AdminThumbMixin
+from mezzanine.utils.urls import admin_url
+
+
+class Blog(Ownable, Slugged):
+    """
+    A blog, managed by the user that owns it.
+    """
+
+    class Meta:
+        verbose_name = _("Blog")
+        verbose_name_plural = _("Blogs")
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("blog_post_list", (), {"blog_slug": self.slug})
+
+    def published_posts(self):
+        return BlogPost.objects.published().filter(blog=self).count()
+
+    def manage_posts(self):
+        url = admin_url(BlogPost, "changelist")
+        url += "?blog__id__exact=%s" % self.id
+        return "<a href='%s'>Manage posts</a>" % url
+    manage_posts.allow_tags = True
+    manage_posts.short_description = ""
 
 
 class BlogPost(Displayable, Ownable, RichText, AdminThumbMixin):
     """
     A blog post.
     """
-
+    blog = models.ForeignKey("Blog", verbose_name=_("Blog"))
     categories = models.ManyToManyField("BlogCategory",
                                         verbose_name=_("Categories"),
                                         blank=True, related_name="blogposts")
@@ -36,7 +61,7 @@ class BlogPost(Displayable, Ownable, RichText, AdminThumbMixin):
     @models.permalink
     def get_absolute_url(self):
         url_name = "blog_post_detail"
-        kwargs = {"slug": self.slug}
+        kwargs = {"blog_slug": self.blog.slug, "slug": self.slug}
         if settings.BLOG_URLS_USE_DATE:
             url_name = "blog_post_detail_date"
             month = str(self.publish_date.month)
@@ -75,10 +100,12 @@ class BlogCategory(Slugged):
     A category for grouping blog posts into a series.
     """
 
+    blog = models.ForeignKey("Blog")
+
     class Meta:
         verbose_name = _("Blog Category")
         verbose_name_plural = _("Blog Categories")
 
     @models.permalink
     def get_absolute_url(self):
-        return ("blog_post_list_category", (), {"category": self.slug})
+        return ("blog_post_list_category", (), {"blog_slug": self.blog.slug, "category": self.slug})

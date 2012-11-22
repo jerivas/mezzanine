@@ -1,7 +1,7 @@
 {% load blog_tags keyword_tags i18n future %}
 
 {% block blog_recent_posts %}
-{% blog_recent_posts 5 as recent_posts %}
+{% blog_recent_posts blog 5 as recent_posts %}
 {% if recent_posts %}
 <h3>{% trans "Recent Posts" %}</h3>
 <ul class="unstyled recent-posts">
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block blog_months %}
-{% blog_months as months %}
+{% blog_months blog as months %}
 {% if months %}
 <h3>{% trans "Archive" %}</h3>
 {% for month in months %}
@@ -22,7 +22,7 @@
         {% if not forloop.first %}</ul>{% endif %}
         <h6>{{ month.date.year }}</h6><ul class="unstyled">
     {% endifchanged %}
-    <li><a href="{% url "blog_post_list_month" year=month.date.year month=month.date.month %}"
+        <li><a href="{% url "blog_post_list_month" blog.slug month.date.year month.date.month %}"
         >{{ month.date|date:"F" }}</a> ({{ month.post_count }})</li>
 {% endfor %}
 </ul>
@@ -30,12 +30,12 @@
 {% endblock %}
 
 {% block blog_categories %}
-{% blog_categories as categories %}
+{% blog_categories blog as categories %}
 {% if categories %}
 <h3>{% trans "Categories" %}</h3>
 <ul class="unstyled">
 {% for category in categories %}
-<li><a href="{% url "blog_post_list_category" category.slug %}"
+<li><a href="{% url "blog_post_list_category" blog.slug category.slug %}"
     >{{ category }}</a> ({{ category.post_count }})</li>
 {% endfor %}
 </ul>
@@ -43,13 +43,17 @@
 {% endblock %}
 
 {% block blog_keywords %}
+{% comment %}
+This neeed to be limited to the current blog. With the current implementation
+of keywor
+{% endcomment %}
 {% keywords_for blog.blogpost as tags %}
 {% if tags %}
 <h3>{% trans "Tags" %}</h3>
 <ul class="unstyled tags">
 {% for tag in tags %}
 <li>
-    <a href="{% url "blog_post_list_tag" tag.slug %}"
+    <a href="{% url "blog_post_list_tag" blog.slug tag.slug %}"
         class="tag-weight-{{ tag.weight }}">{{ tag }}</a>
     ({{ tag.item_count }})
 </li>
@@ -59,12 +63,12 @@
 {% endblock %}
 
 {% block blog_authors %}
-{% blog_authors as authors %}
+{% blog_authors blog as authors %}
 {% if authors %}
 <h3>{% trans "Authors" %}</h3>
 <ul class="unstyled">
 {% for author in authors %}
-    <li><a href="{% url "blog_post_list_author" author.username %}"
+    <li><a href="{% url "blog_post_list_author" blog.slug author.username %}"
         >{{ author.get_full_name|default:author.username }}</a>
         ({{ author.post_count }})</li>
 {% endfor %}
@@ -75,19 +79,19 @@
 {% block blog_feeds %}
 <h3>{% trans "Feeds" %}</h3>
 {% if tag %}
-    <a href="{% url "blog_post_feed_tag" tag.slug "rss" %}">{% trans "RSS" %}</a> /
-    <a href="{% url "blog_post_feed_tag" tag.slug "atom" %}">{% trans "Atom" %}</a>
+    <a href="{% url "blog_post_feed_tag" blog.slug tag.slug "rss" %}">{% trans "RSS" %}</a> /
+    <a href="{% url "blog_post_feed_tag" blog.slug tag.slug "atom" %}">{% trans "Atom" %}</a>
 {% endif %}
 {% if category %}
-    <a href="{% url "blog_post_feed_category" category.slug "rss" %}">{% trans "RSS" %}</a> /
-    <a href="{% url "blog_post_feed_category" category.slug "atom" %}">{% trans "Atom" %}</a>
+    <a href="{% url "blog_post_feed_category" blog.slug category.slug "rss" %}">{% trans "RSS" %}</a> /
+    <a href="{% url "blog_post_feed_category" blog.slug category.slug "atom" %}">{% trans "Atom" %}</a>
 {% endif %}
 {% if author %}
-    <a href="{% url "blog_post_feed_author" author.username "rss" %}">{% trans "RSS" %}</a> /
-    <a href="{% url "blog_post_feed_author" author.username "atom" %}">{% trans "Atom" %}</a>
+    <a href="{% url "blog_post_feed_author" blog.slug author.username "rss" %}">{% trans "RSS" %}</a> /
+    <a href="{% url "blog_post_feed_author" blog.slug author.username "atom" %}">{% trans "Atom" %}</a>
 {% endif %}
 {% if not tag and not category and not author %}
-    <a href="{% url "blog_post_feed" "rss" %}">{% trans "RSS" %}</a> /
-    <a href="{% url "blog_post_feed" "atom" %}">{% trans "Atom" %}</a>
+    <a href="{% url "blog_post_feed" blog.slug "rss" %}">{% trans "RSS" %}</a> /
+    <a href="{% url "blog_post_feed" blog.slug "atom" %}">{% trans "Atom" %}</a>
 {% endif %}
 {% endblock %}

@@ -7,24 +7,25 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django import VERSION
 
-from mezzanine.blog.models import BlogPost, BlogCategory
+from mezzanine.blog.models import Blog, BlogCategory
 from mezzanine.blog.feeds import PostsRSS, PostsAtom
 from mezzanine.conf import settings
 from mezzanine.generic.models import AssignedKeyword, Keyword
 from mezzanine.utils.views import render, paginate
 
 
-def blog_post_list(request, tag=None, year=None, month=None, username=None,
+def blog_post_list(request, blog_slug, tag=None, year=None, month=None, username=None,
                    category=None, template="blog/blog_post_list.html"):
     """
     Display a list of blog posts that are filtered by tag, year, month,
     author or category. Custom templates are checked for using the name
-    ``blog/blog_post_list_XXX.html`` where ``XXX`` is either the
-    category slug or author's username if given.
+    ``blog/XXX_blog_post_list_ZZZ.html`` where ``XXX`` is the current blog slug
+    and ``ZZZ`` is either the category slug or author's username if given.
     """
     settings.use_editable()
     templates = []
-    blog_posts = BlogPost.objects.published(for_user=request.user)
+    blog = Blog.objects.get(slug=blog_slug)
+    blog_posts = blog.blogpost_set.published(for_user=request.user)
     if tag is not None:
         tag = get_object_or_404(Keyword, slug=tag)
         blog_posts = blog_posts.filter(keywords__in=tag.assignments.all())
@@ -36,13 +37,14 @@ def blog_post_list(request, tag=None, year=None, month=None, username=None,
     if category is not None:
         category = get_object_or_404(BlogCategory, slug=category)
         blog_posts = blog_posts.filter(categories=category)
-        templates.append(u"blog/blog_post_list_%s.html" %
-                          unicode(category.slug))
+        templates.append(u"blog/%s_blog_post_list_%s.html" %
+                        (blog_slug, unicode(category.slug)))
     author = None
     if username is not None:
         author = get_object_or_404(User, username=username)
         blog_posts = blog_posts.filter(user=author)
-        templates.append(u"blog/blog_post_list_%s.html" % username)
+        templates.append(u"blog/%s_blog_post_list_%s.html" %
+                         (blog_slug, username))
 
     # We want to iterate keywords and categories for each blog post
     # without triggering "num posts x 2" queries.
@@ -82,23 +84,27 @@ def blog_post_list(request, tag=None, year=None, month=None, username=None,
     blog_posts = paginate(blog_posts, request.GET.get("page", 1),
                           settings.BLOG_POST_PER_PAGE,
                           settings.MAX_PAGING_LINKS)
-    context = {"blog_posts": blog_posts, "year": year, "month": month,
+    templates.append(u"blog/%s_blog_post_list.html" % blog_slug)
+    context = {"blog": blog, "blog_posts": blog_posts, "year": year, "month": month,
                "tag": tag, "category": category, "author": author}
     templates.append(template)
     return render(request, templates, context)
 
 
-def blog_post_detail(request, slug, year=None, month=None, day=None,
+def blog_post_detail(request, blog_slug, slug, year=None, month=None, day=None,
                      template="blog/blog_post_detail.html"):
     """. Custom templates are checked for using the name
-    ``blog/blog_post_detail_XXX.html`` where ``XXX`` is the blog
-    posts's slug.
+    ``blog/XXX_blog_post_detail_YYY.html`` where ``XXX`` is the blog slug
+    and ``ZZZ`` is the particular posts's slug.
     """
-    blog_posts = BlogPost.objects.published(
-                                     for_user=request.user).select_related()
+    blog = Blog.objects.get(slug=blog_slug)
+    blog_posts = blog.blogpost_set.published(
+                    for_user=request.user).select_related()     
     blog_post = get_object_or_404(blog_posts, slug=slug)
-    context = {"blog_post": blog_post, "editable_obj": blog_post}
-    templates = [u"blog/blog_post_detail_%s.html" % unicode(slug), template]
+    context = {"blog": blog, "blog_post": blog_post, "editable_obj": blog_post}
+    templates = [u"blog/%s_blog_post_detail_%s.html" % (blog_slug, unicode(slug)),
+                 u"blog/%s_blog_post_detail.html" % blog_slug,                 
+                 template]
     return render(request, templates, context)
 
 

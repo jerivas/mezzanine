@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 
 from mezzanine.blog.forms import BlogPostForm
-from mezzanine.blog.models import BlogPost, BlogCategory
+from mezzanine.blog.models import BlogCategory
 from mezzanine.generic.models import Keyword
 from mezzanine import template
 
@@ -13,11 +13,12 @@ register = template.Library()
 
 
 @register.as_tag
-def blog_months(*args):
+def blog_months(blog, *args):
     """
     Put a list of dates for blog posts into the template context.
     """
-    dates = BlogPost.objects.published().values_list("publish_date", flat=True)
+    #dates = BlogPost.objects.published().filter(blog=blog).values_list("publish_date", flat=True)
+    dates = blog.blogpost_set.published().values_list("publish_date", flat=True)
     date_dicts = [{"date": datetime(d.year, d.month, 1)} for d in dates]
     month_dicts = []
     for date_dict in date_dicts:
@@ -29,41 +30,41 @@ def blog_months(*args):
 
 
 @register.as_tag
-def blog_categories(*args):
+def blog_categories(blog, *args):
     """
     Put a list of categories for blog posts into the template context.
     """
-    posts = BlogPost.objects.published()
+    posts = blog.blogpost_set.published()
     categories = BlogCategory.objects.filter(blogposts__in=posts)
     return list(categories.annotate(post_count=Count("blogposts")))
 
 
 @register.as_tag
-def blog_authors(*args):
+def blog_authors(blog, *args):
     """
     Put a list of authors (users) for blog posts into the template context.
     """
-    blog_posts = BlogPost.objects.published()
+    blog_posts = blog.blogpost_set.published()
     authors = User.objects.filter(blogposts__in=blog_posts)
     return list(authors.annotate(post_count=Count("blogposts")))
 
 
 @register.as_tag
-def blog_recent_posts(limit=5, tag=None, username=None, category=None):
+def blog_recent_posts(blog, limit=5, tag=None, username=None, category=None):
     """
     Put a list of recently published blog posts into the template context.
     A tag slug, category slug or author's username can also be specified
     to filter the recent posts returned.
 
-    Usage::
+    Usage:
 
-        {% blog_recent_posts 5 as recent_posts %}
-        {% blog_recent_posts limit=5 tag=django as recent_posts %}
-        {% blog_recent_posts limit=5 category=python as recent_posts %}
-        {% blog_recent_posts 5 username=admin as recent_posts %}
+        {% blog_recent_posts blog 5 as recent_posts %}
+        {% blog_recent_posts blog limit=5 tag=django as recent_posts %}
+        {% blog_recent_posts blog limit=5 category=python as recent_posts %}
+        {% blog_recent_posts blog 5 username=admin as recent_posts %}
 
     """
-    blog_posts = BlogPost.objects.published()
+    blog_posts = blog.blogpost_set.published()
     if tag is not None:
         try:
             tag = Keyword.objects.get(slug=tag)

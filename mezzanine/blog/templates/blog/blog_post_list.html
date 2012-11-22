@@ -81,13 +81,13 @@
 {% editable blog_post.publish_date %}
 <h6>
     {% trans "Posted by" %}:
-    {% with blog_post.user as author %}
-    <a href="{% url "blog_post_list_author" author %}">{{ author.get_full_name|default:author.username }}</a>
+    {% with author=blog_post.user %}
+    <a href="{% url "blog_post_list_author" blog author %}">{{ author.get_full_name|default:author.username }}</a>
     {% endwith %}
     {% if blog_post.category_list %}
     {% trans "in" %}
     {% for category in blog_post.category_list %}
-    <a href="{% url "blog_post_list_category" category.slug %}">{{ category }}</a>
+    <a href="{% url "blog_post_list_category" blog.slug category.slug %}">{{ category }}</a>
     {% endfor %}
     {% endif %}
     {% blocktrans with sometime=blog_post.publish_date|timesince %}{{ sometime }} ago{% endblocktrans %}
@@ -113,7 +113,7 @@
     {% trans "Tags" %}:
     {% spaceless %}
     {% for tag in blog_post.keyword_list %}
-    <a href="{% url "blog_post_list_tag" tag.slug %}" class="tag">{{ tag }}</a>
+    <a href="{% url "blog_post_list_tag" blog.slug tag.slug %}" class="tag">{{ tag }}</a>
     {% endfor %}
     {% endspaceless %}
     <br>
