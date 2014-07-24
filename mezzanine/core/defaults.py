@@ -554,6 +554,13 @@ register_setting(
     default={},
 )
 
+if settings.USE_MODELTRANSLATION:
+    register_setting(
+        name="TEMPLATE_ACCESSIBLE_SETTINGS",
+        append=True,
+        default=("USE_MODELTRANSLATION",),
+    )
+
 # The following settings are defined here for documentation purposes
 # as this file is used to auto-generate the documentation for all
 # available settings. They are Mezzanine specific, but their values
