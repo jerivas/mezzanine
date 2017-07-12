@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=500, verbose_name='Title')),
                 ('slug', models.CharField(help_text='Leave blank to have the URL auto-generated from the title.', max_length=2000, null=True, verbose_name='URL', blank=True)),
-                ('site', models.ForeignKey(editable=False, to='sites.Site', on_delete=models.CASCADE)),
+                ('sites', models.ManyToManyField(to="sites.Site")),
             ],
             options={
                 'verbose_name': 'Keyword',

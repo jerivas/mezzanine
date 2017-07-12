@@ -11,6 +11,7 @@ except ImportError:
 
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.base import ModelBase
 from django.template.defaultfilters import truncatewords_html
@@ -46,7 +47,7 @@ def wrapped_manager(klass):
 
 class SiteRelated(models.Model):
     """
-    Abstract model for all things site-related. Adds a foreignkey to
+    Abstract model for all things site-related. Adds a M2M to
     Django's ``Site`` model, and filters by site with all querysets.
     See ``mezzanine.utils.sites.current_site_id`` for implementation
     details.
@@ -57,8 +58,7 @@ class SiteRelated(models.Model):
     class Meta:
         abstract = True
 
-    site = models.ForeignKey("sites.Site", on_delete=models.CASCADE,
-        editable=False)
+    sites = models.ManyToManyField(Site)
 
     def save(self, update_site=False, *args, **kwargs):
         """
@@ -66,9 +66,11 @@ class SiteRelated(models.Model):
         created, or the ``update_site`` argument is explicitly set
         to ``True``.
         """
-        if update_site or (self.id is None and self.site_id is None):
-            self.site_id = current_site_id()
+        created = self.id is None
         super(SiteRelated, self).save(*args, **kwargs)
+        if update_site or created:
+            site = Site.objects.get(pk=current_site_id())
+            self.sites.add(site)
 
 
 @python_2_unicode_compatible

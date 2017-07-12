@@ -12,7 +12,7 @@
             "content_model": "richtextpage",
             "in_menus": [1, 2, 3],
             "slug": "blog",
-            "site": 1
+            "sites": [1]
         }
     },
     {

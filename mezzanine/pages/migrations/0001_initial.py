@@ -76,8 +76,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='page',
-            name='site',
-            field=models.ForeignKey(editable=False, to='sites.Site', on_delete=models.CASCADE),
+            name='sites',
+            field=models.ManyToManyField(to="sites.Site"),
             preserve_default=True,
         ),
     ]
