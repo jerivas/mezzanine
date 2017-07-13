@@ -6,6 +6,16 @@
 
 Created by `Stephen McDonald <http://twitter.com/stephen_mcd>`_
 
+Forked by `Ed Rivas <http://twitter.com/je92rivas>` with enhanced
+multi-site support (content can exist in more than one site at a time).
+
+This fork aims to keep up with Mezzanine, since the only modifications
+are on ``mezzanine.core.models.SiteRelated`` and the related migrations
+and fixtures.
+
+This fork assumes your database will start blank, it doesn't provide any
+extra migrations for existing projects.
+
 ========
 Overview
 ========
