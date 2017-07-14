@@ -85,15 +85,15 @@ class SitePermissionMiddleware(MiddlewareMixin):
 
 class TemplateForDeviceMiddleware(MiddlewareMixin):
     """
-    Inserts device-specific templates to the template list.
+    DEPRECATED: Inserts device-specific templates to the template list.
     """
-    def process_template_response(self, request, response):
-        if hasattr(response, "template_name"):
-            if not isinstance(response.template_name, Template):
-                templates = templates_for_device(request,
-                    response.template_name)
-                response.template_name = templates
-        return response
+    def __init__(self, *args, **kwargs):
+        super(TemplateForDeviceMiddleware, self).__init__(*args, **kwargs)
+        warnings.warn(
+            "`TemplateForDeviceMiddleware` is deprecated. "
+            "Please remove it from your middleware settings.",
+            DeprecationWarning, stacklevel=2
+        )
 
 
 class UpdateCacheMiddleware(MiddlewareMixin):
