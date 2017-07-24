@@ -25,7 +25,7 @@ from mezzanine.utils.cache import (cache_key_prefix, nevercache_token,
 from mezzanine.utils.device import templates_for_device
 from mezzanine.utils.deprecation import (MiddlewareMixin, is_authenticated,
                                          get_middleware_setting)
-from mezzanine.utils.sites import current_site_id, templates_for_host
+from mezzanine.utils.sites import current_site_id
 from mezzanine.utils.urls import next_url
 
 
@@ -85,27 +85,15 @@ class SitePermissionMiddleware(MiddlewareMixin):
 
 class TemplateForDeviceMiddleware(MiddlewareMixin):
     """
-    Inserts device-specific templates to the template list.
+    DEPRECATED: Inserts device-specific templates to the template list.
     """
-    def process_template_response(self, request, response):
-        if hasattr(response, "template_name"):
-            if not isinstance(response.template_name, Template):
-                templates = templates_for_device(request,
-                    response.template_name)
-                response.template_name = templates
-        return response
-
-
-class TemplateForHostMiddleware(MiddlewareMixin):
-    """
-    Inserts host-specific templates to the template list.
-    """
-    def process_template_response(self, request, response):
-        if hasattr(response, "template_name"):
-            if not isinstance(response.template_name, Template):
-                response.template_name = templates_for_host(
-                    response.template_name)
-        return response
+    def __init__(self, *args, **kwargs):
+        super(TemplateForDeviceMiddleware, self).__init__(*args, **kwargs)
+        warnings.warn(
+            "`TemplateForDeviceMiddleware` is deprecated. "
+            "Please remove it from your middleware settings.",
+            DeprecationWarning, stacklevel=2
+        )
 
 
 class UpdateCacheMiddleware(MiddlewareMixin):
