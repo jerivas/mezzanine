@@ -22,7 +22,6 @@ from mezzanine.core.management.commands.createdb import (DEFAULT_USERNAME,
                                                          DEFAULT_PASSWORD)
 from mezzanine.utils.cache import (cache_key_prefix, nevercache_token,
                                    cache_get, cache_set, cache_installed)
-from mezzanine.utils.device import templates_for_device
 from mezzanine.utils.deprecation import (MiddlewareMixin, is_authenticated,
                                          get_middleware_setting)
 from mezzanine.utils.sites import current_site_id
@@ -92,7 +91,20 @@ class TemplateForDeviceMiddleware(MiddlewareMixin):
         warnings.warn(
             "`TemplateForDeviceMiddleware` is deprecated. "
             "Please remove it from your middleware settings.",
-            DeprecationWarning, stacklevel=2
+            FutureWarning, stacklevel=2
+        )
+
+
+class TemplateForHostMiddleware(MiddlewareMixin):
+    """
+    DEPRECATED: Inserts host-specific templates to the template list.
+    """
+    def __init__(self, *args, **kwargs):
+        super(TemplateForHostMiddleware, self).__init__(*args, **kwargs)
+        warnings.warn(
+            "`TemplateForHostMiddleware` is deprecated. "
+            "Please remove it from your middleware settings.",
+            FutureWarning, stacklevel=2
         )
 
 
