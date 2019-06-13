@@ -315,24 +315,6 @@ A three item sequence, each containing a sequence of template tags used to rende
 
 Default: ``(('blog_tags.quick_blog', 'mezzanine_tags.app_list'), ('comment_tags.recent_comments',), ('mezzanine_tags.recent_actions',))``
 
-.. _DEVICE_DEFAULT:
-
-``DEVICE_DEFAULT``
-------------------
-
-Device specific template sub-directory to use as the default device.
-
-Default: ``''``
-
-.. _DEVICE_USER_AGENTS:
-
-``DEVICE_USER_AGENTS``
-----------------------
-
-Mapping of device specific template sub-directory names to the sequence of strings that may be found in their user agents.
-
-Default: ``(('mobile', ('2.0 MMP', '240x320', '400X240', 'AvantGo', 'BlackBerry', 'Blazer', 'Cellphone', 'Danger', 'DoCoMo', 'Elaine/3.0', 'EudoraWeb', 'Googlebot-Mobile', 'hiptop', 'IEMobile', 'KYOCERA/WX310K', 'LG/U990', 'MIDP-2.', 'MMEF20', 'MOT-V', 'NetFront', 'Newt', 'Nintendo Wii', 'Nitro', 'Nokia', 'Opera Mini', 'Palm', 'PlayStation Portable', 'portalmmm', 'Proxinet', 'ProxiNet', 'SHARP-TQ-GX10', 'SHG-i900', 'Small', 'SonyEricsson', 'Symbian OS', 'SymbianOS', 'TS21i-10', 'UP.Browser', 'UP.Link', 'webOS', 'Windows CE', 'WinWAP', 'YahooSeeker/M1A1-R2D2', 'iPhone', 'iPod', 'Android', 'BlackBerry9530', 'LG-TU915 Obigo', 'LGE VX', 'webOS', 'Nokia5800')),)``
-
 .. _EMAIL_FAIL_SILENTLY:
 
 ``EMAIL_FAIL_SILENTLY``
@@ -386,15 +368,6 @@ Default: ``()``
 Max length allowed for field values in the forms app.
 
 Default: ``2000``
-
-.. _FORMS_LABEL_MAX_LENGTH:
-
-``FORMS_LABEL_MAX_LENGTH``
---------------------------
-
-Max length allowed for field labels in the forms app.
-
-Default: ``200``
 
 .. _FORMS_UPLOAD_ROOT:
 
@@ -603,6 +576,15 @@ Dotted package path and class name of the widget to use for the ``RichTextField`
 
 Default: ``'mezzanine.core.forms.TinyMceWidget'``
 
+.. _SEARCH_AGE_SCALE_FACTOR:
+
+``SEARCH_AGE_SCALE_FACTOR``
+---------------------------
+
+The amount of emphasis to put on age when ranking search results. A higher number gives more emphasis to age, ranking newer results higher with less regard to their ordinary score. Setting this to zero disables weighing search results by age.
+
+Default: ``1.5``
+
 .. _SEARCH_MODEL_CHOICES:
 
 ``SEARCH_MODEL_CHOICES``
@@ -620,15 +602,6 @@ Default: ``('pages.Page', 'blog.BlogPost')``
 Number of results shown in the search results page.
 
 Default: ``10``
-
-.. _SEARCH_AGE_SCALE_FACTOR:
-
-``SEARCH_AGE_SCALE_FACTOR``
----------------------------
-
-The amount of emphasis to put on age when ranking search results. A higher number gives more emphasis to age, ranking newer results higher with less regard to their ordinary score. Setting this to zero disables weighing search results by age.
-
-Default: ``1.5``
 
 .. _SITE_PREFIX:
 

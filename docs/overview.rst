@@ -46,7 +46,7 @@ unless noted as optional, should be installed automatically following
 the above instructions:
 
 * `Python`_ 2.7 to 3.6
-* `Django`_ 1.8 to 1.10
+* `Django`_ 1.8 to 1.11
 * `django-contrib-comments`_ - for built-in threaded comments
 * `Pillow`_ - for image resizing (`Python Imaging Library`_ fork)
 * `grappelli-safe`_ - admin skin (`Grappelli`_ fork)
@@ -461,7 +461,7 @@ certain sites.
 * `Code Source <http://codesource.com.au/>`_
 * `The Federation of Egalitarian Communities <http://thefec.org>`_
 * `Caffeinated Lifestyle <https://caffeinatedlifestyle.com>`_
-
+* `The National: New Australian Art <https://the-national.com.au>`_
 .. _`Mezzanine Grid on djangopackages.com`: http://www.djangopackages.com/grids/g/mezzanine/
 .. _`Cartridge`: http://cartridge.jupo.org/
 .. _`Drum`: https://github.com/stephenmcd/drum
